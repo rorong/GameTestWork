@@ -1,0 +1,69 @@
+<div class="wrapper">
+  <div class="container-fluid">
+    <div class="games_wrapper_col">
+      <b class="page_heading">Games</b>
+        <% @games.each do |game| %>
+          <div class="games_card_col">
+            <ul>
+              <li class="games_logo">
+                <img src="<%= game.home_team_logo %>" alt="">
+                <img src="<%= game.away_team_logo %>" alt="">
+              </li>
+              <li class="wdt20">
+                <p><%= game.title %></p>
+                <span><%= formatted_time(game.created_at) %></span>
+              </li>
+              <li>
+                <p><%= game.reach %>M</p>
+                <span>Reach</span>
+              </li>
+              <li>
+                <p><%= game.league %></p>
+                <span>League</span>
+              </li>
+              <li>
+                <p><%= game.channel %></p>
+                <span>Channel</span>
+              </li>
+              <li class="alg_start wdt20">
+                <p><%= game.price_per_minute %> /min</p>          
+              </li>
+              <li class="qty_input">
+                <button type="button" onclick="minusMinutes(<%=game.id%>)">-</button>
+                  <span id="minutes_booked_<%= game.id %>"><%= game.minutes_booked %></span>
+                <button type="button" onclick="addMinutes(<%=game.id%>)">+</button>
+              </li>
+            </ul>
+          </div>   
+        <% end %>
+        <div class="checkout_row"><span class="totl_text">Total:   <span id="total"><%= @total %></span></span>
+          <button type="" class="checkout_btn">Proceed To checkout</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+	function addMinutes(id) {
+	  saveOnserver(id, 'increment');
+	}
+
+	function minusMinutes(id) {
+		saveOnserver(id, 'decrement');
+	}
+
+  function saveOnserver(id, type){
+  	fetch(`update/${id}/${type}`,{method: 'PUT'})
+    .then((resp) => {
+    	resp.json().then(data=> {
+  	  	let total = document.getElementById('total');
+  	  	let minutes = document.getElementById(`minutes_booked_${id}`);
+    		total.innerHTML = data.total
+    		minutes.innerHTML = data.value
+    	})
+
+    });
+  }
+
+</script>
